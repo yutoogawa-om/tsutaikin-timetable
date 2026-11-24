@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>京阪 光善寺 → ドーム前千代崎／帰り 淀屋橋 → 光善寺 自分用時刻表（平日）</title>
+<style>
+  :root{--ink:#1a1a1a;--muted:#666;--line:#ddd;--semi:#e2574c;--jun:#2e7d32;--kukan:#1565c0;--tsukin:#6a1b9a;--futsu:#757575}
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;color:var(--ink);margin:0 auto;max-width:720px;padding:16px}
+  h1{font-size:20px;margin:4px 0 2px}
+  .sub{color:var(--muted);font-size:13px;margin:0 0 12px}
+  .box{border:1px solid var(--line);border-radius:10px;padding:12px;margin:12px 0}
+  .box label{display:block;font-size:13px;margin:6px 0}
+  .box input{width:64px;padding:6px;font-size:16px}
+  .tabs{display:flex;gap:8px;margin:12px 0}
+  .tabs button{flex:1;padding:10px;font-size:16px;border:1px solid var(--line);border-radius:8px;background:#f5f5f5;cursor:pointer}
+  .tabs button.on{background:#1a1a1a;color:#fff}
+  .filters{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+  .filters button{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;cursor:pointer;font-size:13px}
+  .filters button.on{background:#e8f0fe;border-color:#1565c0}
+  #now{font-size:14px;font-weight:bold;margin:8px 0}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  th,td{padding:8px 4px;border-bottom:1px solid #eee;text-align:left}
+  th{font-size:12px;color:var(--muted);position:sticky;top:0;background:#fff;z-index:2;box-shadow:0 1px 0 var(--line)}
+  td.time{font-variant-numeric:tabular-nums;font-weight:bold;white-space:nowrap}
+  .badge{display:inline-block;padding:2px 8px;border-radius:999px;color:#fff;font-size:12px;white-space:nowrap}
+  .準急{background:var(--jun)} .区間急行{background:var(--kukan)} .通勤準急{background:var(--tsukin)} .普通{background:var(--futsu)}
+  tr.next{background:#fff8e1}
+  tr.next td.time::after{content:" ←次";color:#b26a00;font-size:12px}
+  tr.past{opacity:.38}
+  .note{font-size:12px;color:var(--muted);line-height:1.7}
+  .fast{color:#2e7d32;font-weight:bold}
+</style>
+</head>
+<body>
+<h1>京阪 光善寺 → ドーム前千代崎／帰り 淀屋橋 → 光善寺</h1>
+<p class="sub">自分用・平日ダイヤ（2026-11-24 火曜基準）・行きは京橋で大阪メトロ長堀鶴見緑地線に乗り換え・帰りは淀屋橋発のみ</p>
+
+<div class="box">
+  <strong>徒歩の設定（入力すると会社到着／家を出る目安が出ます）</strong>
+  <label>ドーム前千代崎駅 → 会社： <input id="walkOffice" type="number" min="0" max="60" placeholder="分"> 分</label>
+  <label>自宅 → 光善寺駅： <input id="walkHome" type="number" min="0" max="60" placeholder="分"> 分</label>
+  <div class="note">入力はこの端末のブラウザにだけ保存されます（localStorage）。ドーム前千代崎→会社は初期値8分です（変更可）。未入力のとき会社到着は「—」です。</div>
+</div>
+
+<div class="tabs">
+  <button id="tabOut" class="on">行き：光善寺 → 京橋乗換 → ドーム前千代崎（6:02〜9:58発）</button>
+  <button id="tabBack">帰り：淀屋橋 → 光善寺（17:07〜23:45発）</button>
+</div>
+<div class="filters" id="filters"></div>
+<div id="now"></div>
+<table>
+  <thead id="thead"></thead>
+  <tbody id="body"></tbody>
+</table>
+
+<p class="note">
+・行きの乗換は京橋のみです。メトロ京橋発は、京阪の京橋着から5分以上の乗換余裕が取れる最初の列車を選んでいます（乗換時間の目安は実績に合わせて調整してください）。<br>
+・「普通」はNAVITIMEで種別名なしで表示された列車を普通と判断しています。京阪公式時刻表での最終確認を推奨します。<br>
+・朝の区間急行・普通は京橋までも遅く、乗り換えても所要が長くなります（例：7:08発 区間急行は計49分、7:46発 普通は計58分）。急ぐときは準急・通勤準急がおすすめです。★は合計所要45分以内の列車です。<br>
+・23:45発 淀屋橋→光善寺が終電です（光善寺着 0:09）。<br>
+・土曜・休日ダイヤは未収録です。2026-11-23（月）は祝日（勤労感謝の日）のため、この平日ダイヤは翌11-24（火）から使えます。<br>
+・出典：NAVITIME 光善寺→京橋（京阪本線）時刻表／森ノ宮→ドーム前千代崎（長堀鶴見緑地線）時刻表（いずれも2026-11-24分、2026-11-23確認）、大阪メトロ公式 京橋駅時刻表（長堀鶴見緑地線・大正方面、2025-10-14現在）でメトロ京橋発を照合、NAVITIME 淀屋橋→光善寺 時刻表（2026-11-24分、2026-11-23確認）
+</p>
+
+<script>
+const OUT=[
+// [光善寺発, 種別, 京橋着, メトロ京橋発, ドーム前千代崎着, 合計所要(分)]
+["06:02","準急","06:19","06:28","06:45",43],["06:15","準急","06:33","06:41","06:58",43],
+["06:23","準急","06:42","06:47","07:04",41],["06:29","区間急行","06:57","07:03","07:21",52],
+["06:37","普通","07:10","07:15","07:34",57],["06:41","準急","07:02","07:08","07:26",45],
+["06:46","準急","07:05","07:12","07:30",44],["06:52","準急","07:13","07:19","07:37",45],
+["07:00","準急","07:20","07:26","07:44",44],["07:03","準急","07:24","07:29","07:47",44],
+["07:08","区間急行","07:34","07:39","07:57",49],["07:15","準急","07:40","07:46","08:04",49],
+["07:26","準急","07:49","07:56","08:14",48],["07:31","区間急行","07:59","08:05","08:23",52],
+["07:38","通勤準急","08:00","08:05","08:23",45],["07:46","普通","08:19","08:26","08:44",58],
+["07:51","通勤準急","08:12","08:17","08:35",44],["07:56","通勤準急","08:15","08:20","08:38",42],
+["08:03","通勤準急","08:25","08:32","08:50",47],["08:08","普通","08:43","08:49","09:07",59],
+["08:18","準急","08:39","08:46","09:04",46],["08:28","区間急行","08:53","09:03","09:21",53],
+["08:34","準急","08:56","09:03","09:21",47],["08:41","準急","09:04","09:09","09:27",46],
+["08:48","準急","09:13","09:22","09:39",51],["09:04","準急","09:25","09:34","09:52",48],
+["09:11","準急","09:32","09:41","09:59",48],["09:20","準急","09:40","09:48","10:06",46],
+["09:24","区間急行","09:52","10:01","10:19",55],["09:32","準急","09:55","10:01","10:19",47],
+["09:51","準急","10:11","10:21","10:39",48],["09:58","区間急行","10:27","10:34","10:52",54]
+];
+const BACK=[
+["17:07","準急","出町柳","17:33",26],["17:15","準急","淀","17:40",25],
+["17:18","準急","樟葉","17:45",27],["17:28","準急","出町柳","17:57",29],
+["17:31","区間急行","枚方市","18:02",31],["17:38","準急","出町柳","18:09",31],
+["17:53","準急","出町柳","18:23",30],
+["18:03","準急","出町柳","18:36",33],["18:17","準急","枚方市","18:48",31],
+["18:28","普通","出町柳","19:15",47],["18:30","準急","出町柳","19:00",30],
+["18:39","準急","出町柳","19:09",30],["18:54","準急","樟葉","19:24",30],
+["19:17","準急","樟葉","19:49",32],["19:20","普通","樟葉","20:03",43],
+["19:27","準急","出町柳","19:58",31],["19:56","準急","枚方市","20:26",30],
+["20:08","準急","出町柳","20:35",27],["20:29","準急","出町柳","20:54",25],
+["20:40","準急","出町柳","21:04",24],["20:53","準急","出町柳","21:18",25],
+["21:05","準急","出町柳","21:29",24],["21:17","準急","出町柳","21:41",24],
+["21:29","準急","出町柳","21:53",24],["21:41","準急","出町柳","22:05",24],
+["21:53","準急","出町柳","22:17",24],
+["22:20","準急","淀","22:44",24],["22:32","準急","出町柳","22:57",25],
+["22:59","準急","淀","23:23",24],
+["23:06","区間急行","枚方市","23:37",31],["23:15","準急","三条","23:41",26],
+["23:37","準急","樟葉","00:01",24],["23:45","準急","淀","00:09",24]
+];
+let dir="out", filter="すべて", wantScroll=true;
+const $=id=>document.getElementById(id);
+const toMin=s=>{const[a,b]=s.split(":").map(Number);return a*60+b};
+const toHM=m=>String(Math.floor(m/60)%24).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+function scrollToNext(){
+  const target=document.querySelector("tr.next")||document.querySelector("#body tr:last-child");
+  if(!target)return;
+  const y=target.getBoundingClientRect().top+window.scrollY-150;
+  window.scrollTo({top:Math.max(y,0),behavior:"smooth"});
+}
+function render(){
+  const data=dir==="out"?OUT:BACK;
+  const types=["すべて","準急","通勤準急","区間急行","普通"];
+  $("filters").innerHTML=types.map(t=>`<button class="${filter===t?"on":""}" data-t="${t}">${t}</button>`).join("");
+  document.querySelectorAll("#filters button").forEach(b=>b.onclick=()=>{filter=b.dataset.t;render()});
+  $("tabOut").className=dir==="out"?"on":""; $("tabBack").className=dir==="back"?"on":"";
+  $("thead").innerHTML=dir==="out"
+    ?"<tr><th>光善寺発</th><th>種別</th><th>京橋着</th><th>メトロ京橋発</th><th>ドーム前千代崎着</th><th>所要</th><th>会社到着見込み</th></tr>"
+    :"<tr><th>発</th><th>種別</th><th>行き先</th><th>着</th><th>所要</th><th>自宅到着見込み</th></tr>";
+  const now=new Date(); const nowMin=now.getHours()*60+now.getMinutes();
+  const walkOffice=parseInt($("walkOffice").value,10), walkHome=parseInt($("walkHome").value,10);
+  let nextFound=false;
+  const rows=data.filter(r=>filter==="すべて"||r[1]===filter).map(r=>{
+    const dep=toMin(r[0]);
+    const cls=dep>=nowMin&&!nextFound?(nextFound=true,"next"):(dep<nowMin?"past":"");
+    if(dir==="out"){
+      const arrMin=toMin(r[4]);
+      const extra=isNaN(walkOffice)?"—":toHM(arrMin+walkOffice);
+      const leave=isNaN(walkHome)?"":`（家 ${toHM(dep-walkHome)} 出）`;
+      const fast=r[5]<=45?` <span class="fast">★速い</span>`:"";
+      return `<tr class="${cls}"><td class="time">${r[0]}${leave}</td><td><span class="badge ${r[1]}">${r[1]}</span></td><td class="time">${r[2]}</td><td class="time">${r[3]}</td><td class="time">${r[4]}</td><td>${r[5]}分${fast}</td><td class="time">${extra}</td></tr>`;
+    }
+    const arr=toMin(r[3]); const arrMin=r[3].startsWith("00:")?arr+1440:arr;
+    const extra=isNaN(walkHome)?"—":toHM(arrMin+walkHome);
+    const fast=r[4]<=26?` <span class="fast">★速い</span>`:"";
+    return `<tr class="${cls}"><td class="time">${r[0]}</td><td><span class="badge ${r[1]}">${r[1]}</span></td><td>${r[2]}行</td><td class="time">${r[3]}</td><td>${r[4]}分${fast}</td><td class="time">${extra}</td></tr>`;
+  }).join("");
+  $("body").innerHTML=rows;
+  const upcoming=data.find(r=>toMin(r[0])>=nowMin);
+  if(upcoming){
+    $("now").textContent=dir==="out"
+      ?`現在 ${toHM(nowMin)} — 次は ${upcoming[0]}発 ${upcoming[1]}（京橋 ${upcoming[2]}着 → メトロ ${upcoming[3]}発 → ドーム前千代崎 ${upcoming[4]}着・計${upcoming[5]}分）`
+      :`現在 ${toHM(nowMin)} — 次は ${upcoming[0]}発 ${upcoming[1]}（${upcoming[3]}着・${upcoming[4]}分）`;
+  }else{
+    $("now").textContent=`現在 ${toHM(nowMin)} — この時間帯の列車は終了しました`;
+  }
+  if(wantScroll){wantScroll=false;requestAnimationFrame(()=>setTimeout(scrollToNext,50));}
+}
+$("tabOut").onclick=()=>{dir="out";filter="すべて";wantScroll=true;render()};
+$("tabBack").onclick=()=>{dir="back";filter="すべて";wantScroll=true;render()};
+["walkOffice","walkHome"].forEach(id=>{
+  const saved=localStorage.getItem(id);
+  $(id).value=saved!==null?saved:(id==="walkOffice"?"8":"");
+  $(id).addEventListener("input",()=>{localStorage.setItem(id,$(id).value);render()});
+});
+render(); setInterval(render,60000);
+</script>
+</body>
+</html>
