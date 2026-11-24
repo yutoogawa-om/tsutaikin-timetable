@@ -60,6 +60,7 @@
 </table>
 
 <p class="note">
+・開いた時のタブは時間帯で自動で切り替わります（12時前は行き、12時以降は帰り）。ページを開いたまま12時をまたいだ場合も自動で切り替わりますが、タブを押して手動で選んだ場合はそちらが優先されます。<br>
 ・行きの乗換は京橋のみです。メトロ京橋発は、京阪の京橋着から5分以上の乗換余裕が取れる最初の列車を選んでいます（乗換時間の目安は実績に合わせて調整してください）。<br>
 ・「普通」はNAVITIMEで種別名なしで表示された列車を普通と判断しています。京阪公式時刻表での最終確認を推奨します。<br>
 ・朝の区間急行・普通は京橋までも遅く、乗り換えても所要が長くなります（例：7:08発 区間急行は計49分、7:46発 普通は計58分）。急ぐときは準急・通勤準急がおすすめです。★は合計所要45分以内の列車です。<br>
@@ -133,7 +134,9 @@ const PLAT={
 "20:08":4,"20:20":4,"20:29":4,"20:40":4,"20:53":3,"21:05":3,"21:17":3,"21:29":3,"21:41":3,"21:53":3,
 "22:05":3,"22:20":3,"22:32":3,"22:45":3,"22:59":4,"23:06":3,"23:15":3,"23:25":4,"23:37":4,"23:45":3
 };
-let dir="out", filter="すべて", wantScroll=true;
+let manualDir=false;
+const autoDir=()=>new Date().getHours()<12?"out":"back";
+let dir=autoDir(), filter="すべて", wantScroll=true;
 const $=id=>document.getElementById(id);
 const toMin=s=>{const[a,b]=s.split(":").map(Number);return a*60+b};
 const toHM=m=>String(Math.floor(m/60)%24).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
@@ -184,14 +187,18 @@ function render(){
   }
   if(wantScroll){wantScroll=false;requestAnimationFrame(()=>setTimeout(scrollToNext,50));}
 }
-$("tabOut").onclick=()=>{dir="out";filter="すべて";wantScroll=true;render()};
-$("tabBack").onclick=()=>{dir="back";filter="すべて";wantScroll=true;render()};
+$("tabOut").onclick=()=>{manualDir=true;dir="out";filter="すべて";wantScroll=true;render()};
+$("tabBack").onclick=()=>{manualDir=true;dir="back";filter="すべて";wantScroll=true;render()};
 ["walkOffice","walkHome"].forEach(id=>{
   const saved=localStorage.getItem(id);
   $(id).value=saved!==null?saved:(id==="walkOffice"?"8":"");
   $(id).addEventListener("input",()=>{localStorage.setItem(id,$(id).value);render()});
 });
-render(); setInterval(render,60000);
+render();
+setInterval(()=>{
+  if(!manualDir&&autoDir()!==dir){dir=autoDir();filter="すべて";wantScroll=true;}
+  render();
+},60000);
 </script>
 </body>
 </html>
